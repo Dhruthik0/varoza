@@ -14,7 +14,7 @@ export default function SellerWithdrawals() {
   const fetchWithdrawals = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5001/api/seller/withdrawals",
+        "https://varoza-backend.onrender.com/api/seller/withdrawals",
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -45,7 +45,7 @@ export default function SellerWithdrawals() {
       setSubmitting(true);
 
       const res = await fetch(
-        "http://localhost:5001/api/seller/withdraw",
+        "https://varoza-backend.onrender.com/api/seller/withdraw",
         {
           method: "POST",
           headers: {

@@ -1,4 +1,4 @@
-const API = "http://localhost:5001/api/orders";
+const API = "https://varoza-backend.onrender.com/api/orders";
 
 export const createOrder = async (data, token) => {
   const res = await fetch(`${API}/create`, {

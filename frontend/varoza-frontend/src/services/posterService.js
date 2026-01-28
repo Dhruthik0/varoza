@@ -1,4 +1,4 @@
-const API = "http://localhost:5001/api/posters";
+const API = "https://varoza-backend.onrender.com/api/posters";
 
 export const getApprovedPosters = async (search = "") => {
   const url = search

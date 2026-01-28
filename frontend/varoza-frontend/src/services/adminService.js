@@ -1,4 +1,4 @@
-const API = "http://localhost:5001/api/admin";
+const API = "https://varoza-backend.onrender.com/api/admin";
 
 // 🧑‍🎨 SELLERS
 export const getPendingSellers = async (token) => {
@@ -56,7 +56,7 @@ export const getPendingOrders = async (token) => {
 
 export const approveOrderPayment = async (orderId, token) => {
   const res = await fetch(
-    "http://localhost:5001/api/admin/approve-order",
+    "https://varoza-backend.onrender.com/api/admin/approve-order",
     {
       method: "POST",
       headers: {
@@ -75,7 +75,7 @@ export const approveOrderPayment = async (orderId, token) => {
 };
 export const getAnalytics = async (token) => {
   const res = await fetch(
-    "http://localhost:5001/api/admin/analytics",
+    "https://varoza-backend.onrender.com/api/admin/analytics",
     {
       headers: {
         Authorization: `Bearer ${token}`,

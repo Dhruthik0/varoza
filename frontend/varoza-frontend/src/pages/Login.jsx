@@ -17,7 +17,7 @@ export default function Login() {
 
     try {
       const res = await fetch(
-        "http://localhost:5001/api/auth/login",
+        "https://varoza-backend.onrender.com/api/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

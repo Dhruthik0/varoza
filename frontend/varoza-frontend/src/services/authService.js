@@ -1,4 +1,4 @@
-const API = "http://localhost:5001/api/auth";
+const API = "https://varoza-backend.onrender.com/api/auth";
 
 export const loginUser = async ({ email, password }) => {
   const res = await fetch(`${API}/login`, {

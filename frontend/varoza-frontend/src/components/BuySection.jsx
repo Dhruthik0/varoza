@@ -5,7 +5,7 @@ export default function BuySection({ posterId }) {
   const { user } = useContext(AuthContext);
 
   const confirmPayment = async () => {
-    await fetch("http://localhost:5001/api/buyer/confirm-payment", {
+    await fetch("https://varoza-backend.onrender.com/api/buyer/confirm-payment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

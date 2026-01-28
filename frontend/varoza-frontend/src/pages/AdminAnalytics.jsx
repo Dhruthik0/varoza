@@ -29,7 +29,7 @@ export default function AdminAnalytics() {
 
     setUpdating(true);
     try {
-      await fetch("http://localhost:5001/api/admin/set-margin", {
+      await fetch("https://varoza-backend.onrender.com/api/admin/set-margin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

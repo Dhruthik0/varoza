@@ -12,7 +12,7 @@ export default function Payment() {
 
     const fetchUpi = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/admin/upi", {
+        const res = await fetch("https://varoza-backend.onrender.com/api/admin/upi", {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
@@ -33,7 +33,7 @@ export default function Payment() {
     try {
       setLoading(true);
 
-      await fetch("http://localhost:5001/api/orders/mark-paid", {
+      await fetch("https://varoza-backend.onrender.com/api/orders/mark-paid", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

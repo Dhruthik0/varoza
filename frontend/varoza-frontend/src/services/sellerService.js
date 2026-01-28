@@ -1,4 +1,4 @@
-const API = "http://localhost:5001/api/seller";
+const API = "https://varoza-backend.onrender.com/api/seller";
 
 export const getMyPosters = async (token) => {
   const res = await fetch(`${API}/my-posters`, {
@@ -30,7 +30,7 @@ export const uploadPoster = async (data, token) => {
   return res.json();
 };
 export const getWithdrawals = async (token) => {
-  const res = await fetch("http://localhost:5001/api/seller/withdrawals", {
+  const res = await fetch("https://varoza-backend.onrender.com/api/seller/withdrawals", {
     headers: {
       Authorization: `Bearer ${token}`
     }

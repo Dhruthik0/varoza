@@ -42,7 +42,7 @@ export default function UploadPoster({ onUpload }) {
       formData.append("image", image); // 🔥 real file
 
       const res = await fetch(
-        "http://localhost:5001/api/seller/upload",
+        "https://varoza-backend.onrender.com/api/seller/upload",
         {
           method: "POST",
           headers: {

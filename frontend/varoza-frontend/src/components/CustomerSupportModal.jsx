@@ -32,7 +32,7 @@ export default function CustomerSupportModal({ open, onClose }) {
               href="tel:+919999999999"
               className="text-lg text-purple-400 font-semibold"
             >
-              +91 99999 99999
+              +91 78924 03563
             </a>
           </div>
 
@@ -40,7 +40,7 @@ export default function CustomerSupportModal({ open, onClose }) {
           <div className="bg-black/60 p-4 rounded border border-white/10">
             <p className="text-gray-400 text-sm">WhatsApp</p>
             <a
-              href="https://wa.me/919999999999"
+              href="https://wa.me/917892403563"
               target="_blank"
               rel="noopener noreferrer"
               className="text-lg text-green-400 font-semibold"

@@ -14,7 +14,7 @@ export default function PosterDetail() {
     const fetchPoster = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5001/api/posters/${id}`
+          `https://varoza-backend.onrender.com/api/posters/${id}`
         );
         const data = await res.json();
         setPoster(data);
