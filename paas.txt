@@ -1,0 +1,42 @@
+
+ADMIN Token
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NmU4NDg3Y2QwOWEzYTY4MTM0Nzk2MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2ODg1MDU5MCwiZXhwIjoxNzY5NDU1MzkwfQ.cRcfUrTwN6kAVUmzpmaTZZF9YRiN9m5WoyCAnV8kx4Y"
+
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NmU4NDg3Y2QwOWEzYTY4MTM0Nzk2MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2ODg1MDU5MCwiZXhwIjoxNzY5NDU1MzkwfQ.cRcfUrTwN6kAVUmzpmaTZZF9YRiN9m5WoyCAnV8kx4Y
+
+
+seller token
+(base) dhruthik@Dhruthiks-MacBook-Air ~ % curl -X POST http://localhost:5001/api/auth/login \
+-H "Content-Type: application/json" \
+-d '{"email":"seller@test.com","password":"123456"}'
+
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NmU4OTIxYjNmNGQ2NTUwMTZiYTIwYiIsInJvbGUiOiJzZWxsZXIiLCJpYXQiOjE3Njg4NTE3NjIsImV4cCI6MTc2OTQ1NjU2Mn0.2g_llztVt416aYyHkadKTkkDKQXqyRFxP6IK81tApVU","role":"seller","name":"Seller One"}
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NmU4OTIxYjNmNGQ2NTUwMTZiYTIwYiIsInJvbGUiOiJzZWxsZXIiLCJpYXQiOjE3Njg4NTE3NjIsImV4cCI6MTc2OTQ1NjU2Mn0.2g_llztVt416aYyHkadKTkkDKQXqyRFxP6IK81tApVU
+
+
+BUYER Token
+{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NmYyZGUxY2YyZjk4ZjVjOGIyZDNmYyIsInJvbGUiOiJidXllciIsImlhdCI6MTc2ODg5Mzk0MywiZXhwIjoxNzY5NDk4NzQzfQ.q9oTWNNS95VRf_oZDNaFsb23BQdssgMLCMdmhvIxnEI","role":"buyer","name":"Buyer One"}%
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NmYyZGUxY2YyZjk4ZjVjOGIyZDNmYyIsInJvbGUiOiJidXllciIsImlhdCI6MTc2ODg5Mzk0MywiZXhwIjoxNzY5NDk4NzQzfQ.q9oTWNNS95VRf_oZDNaFsb23BQdssgMLCMdmhvIxnEI
+
+
+
+
+696f6ca40893ba4ffa8feef8
+
+
+69728a7dabd54e4ee50217c1
+
+pushi seller
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzUxMGUyMTNlNjZlZDcxOTRkNGYwNyIsInJvbGUiOiJzZWxsZXIiLCJpYXQiOjE3NjkyNzk3MzUsImV4cCI6MTc2OTg4NDUzNX0.qvSjqbawcTti-MMjmx3oi5weBB_rPHx7z27CJ_7f5qg
+
+
+JSON.parse(localStorage.getItem("user"))
+
+
+dq654n8ja
+
+CLOUDINARY_URL=cloudinary://<your_api_key>:<your_api_secret>@dq654n8ja
+jDXn-hZd7YqOI0ha5w7ynEsYn0o  APISECRET
+976223463665238 KEY

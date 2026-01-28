@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base background */
+body {
+  background: radial-gradient(circle at center, #0b0f1a 0%, #05070d 70%);
+  color: #e5e7eb;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Smoke layers */
+.smoke {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(
+    circle,
+    rgba(180, 130, 255, 0.15) 0%,
+    rgba(180, 130, 255, 0.05) 40%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  animation: smokeMove 40s linear infinite;
+  opacity: 0.6;
+}
+
+.smoke-1 {
+  top: -30%;
+  left: -20%;
+  animation-duration: 45s;
+}
+
+.smoke-2 {
+  top: 10%;
+  left: 20%;
+  animation-duration: 60s;
+  animation-direction: reverse;
+}
+
+.smoke-3 {
+  top: 40%;
+  left: -10%;
+  animation-duration: 55s;
+}
+
+@keyframes smokeMove {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(10%, -10%) scale(1.2);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+@keyframes glowPulse {
+  0% {
+    text-shadow:
+      0 0 10px rgba(168, 85, 247, 0.4),
+      0 0 20px rgba(168, 85, 247, 0.3),
+      0 0 40px rgba(168, 85, 247, 0.2);
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    text-shadow:
+      0 0 20px rgba(168, 85, 247, 0.7),
+      0 0 40px rgba(168, 85, 247, 0.5),
+      0 0 80px rgba(168, 85, 247, 0.4);
+    transform: scale(1.03);
+    opacity: 1;
+  }
+
+  100% {
+    text-shadow:
+      0 0 10px rgba(168, 85, 247, 0.4),
+      0 0 20px rgba(168, 85, 247, 0.3),
+      0 0 40px rgba(168, 85, 247, 0.2);
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+.glow-text {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-delayed {
+  opacity: 0;
+  animation: fadeUp 1.8s ease-out forwards;
+  animation-delay: 1.2s;
+}
