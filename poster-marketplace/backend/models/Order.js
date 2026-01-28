@@ -18,6 +18,12 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+          quantity: {
+        type: Number,
+        required: true,
+        default: 1
+      },
+
 
     adminMargin: Number,
     sellerEarning: Number,
@@ -46,6 +52,7 @@ const orderSchema = new mongoose.Schema(
       default: "pending"
     }
   },
+
   { timestamps: true }
 );
 

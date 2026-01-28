@@ -22,26 +22,53 @@ exports.createOrder = async (req, res) => {
 
     const orders = [];
 
+    // for (const item of cartItems) {
+    //   const poster = await Poster.findById(item._id);
+    //   if (!poster) continue;
+
+    //   const adminMargin = (poster.price * marginPercentage) / 100;
+    //   const sellerEarning = poster.price - adminMargin;
+
+    //   const order = await Order.create({
+    //     buyer: req.user.id,
+    //     poster: poster._id,
+    //     totalAmount: poster.price,
+    //     adminMargin,
+    //     sellerEarning,
+    //     deliveryAddress: address,
+    //     phoneNumber: phone,
+    //     paymentStatus: "verification_pending"
+    //   });
+
+    //   orders.push(order);
+    // }
     for (const item of cartItems) {
-      const poster = await Poster.findById(item._id);
-      if (!poster) continue;
+  const poster = await Poster.findById(item._id);
+  if (!poster) continue;
 
-      const adminMargin = (poster.price * marginPercentage) / 100;
-      const sellerEarning = poster.price - adminMargin;
+  const quantity = item.quantity || 1;
 
-      const order = await Order.create({
-        buyer: req.user.id,
-        poster: poster._id,
-        totalAmount: poster.price,
-        adminMargin,
-        sellerEarning,
-        deliveryAddress: address,
-        phoneNumber: phone,
-        paymentStatus: "verification_pending"
-      });
+  const adminMarginPerItem =
+    (poster.price * marginPercentage) / 100;
 
-      orders.push(order);
-    }
+  const sellerEarningPerItem =
+    poster.price - adminMarginPerItem;
+
+  const order = await Order.create({
+    buyer: req.user.id,
+    poster: poster._id,
+    quantity,
+    totalAmount: poster.price * quantity,
+    adminMargin: adminMarginPerItem * quantity,
+    sellerEarning: sellerEarningPerItem * quantity,
+    deliveryAddress: address,
+    phoneNumber: phone,
+    paymentStatus: "verification_pending"
+  });
+
+  orders.push(order);
+}
+
 
     res.status(201).json({
       message: "Order created. Proceed to payment.",
