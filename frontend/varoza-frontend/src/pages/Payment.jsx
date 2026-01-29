@@ -3,31 +3,11 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function Payment() {
   const { user } = useContext(AuthContext);
-  const [upi, setUpi] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!user?.token) return;
-
-    const fetchUpi = async () => {
-      try {
-        const res = await fetch("https://varoza-backend.onrender.com/api/admin/upi", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
-
-        const data = await res.json();
-        setUpi(data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load payment details");
-      }
-    };
-
-    fetchUpi();
-  }, [user]);
+  // ✅ HARD-CODED VALUES
+  const UPI_ID = "D26@slc";
+  const QR_IMAGE = "/upi-qr.jpg"; // place QR inside public/upi-qr.png
 
   const markPaid = async () => {
     try {
@@ -58,40 +38,22 @@ export default function Payment() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-center text-red-400 mt-32">
-        {error}
-      </div>
-    );
-  }
-
-  if (!upi) {
-    return (
-      <div className="text-center text-gray-400 mt-32">
-        Loading payment info...
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-xl mx-auto px-6 py-16 text-center">
       <h1 className="text-3xl text-purple-400 mb-6">
         Complete Payment
       </h1>
 
-      {/* QR CODE */}
-      {upi.upiQrUrl && (
-        <img
-          src={upi.upiQrUrl}
-          alt="UPI QR"
-          className="mx-auto mb-6 rounded-xl w-64"
-        />
-      )}
+      {/* ✅ QR CODE */}
+      <img
+        src={QR_IMAGE}
+        alt="UPI QR"
+        className="mx-auto mb-6 rounded-xl w-64"
+      />
 
-      {/* UPI ID */}
+      {/* ✅ UPI ID */}
       <p className="text-gray-300 mb-6">
-        UPI ID: <b>{upi.upiId}</b>
+        UPI ID: <b>{UPI_ID}</b>
       </p>
 
       {/* CONFIRM PAYMENT */}
