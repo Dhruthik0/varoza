@@ -49,7 +49,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",      // local frontend
-      "https://varoza.vercel.app"   // production frontend (later)
+      "https://varoza.vercel.app",  // production frontend (later)
+       "https://varoza.in",
+       "https://www.varoza.in"
+
     ],
     credentials: true
   })
