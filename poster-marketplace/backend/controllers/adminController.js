@@ -357,3 +357,100 @@ exports.rejectWithdrawal = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+// 🚚 SET SHIPPING CHARGE (ADMIN)
+exports.setShippingCharge = async (req, res) => {
+  try {
+    const { shippingCharge } = req.body;
+
+    let settings = await AdminSettings.findOne();
+    if (!settings) settings = new AdminSettings();
+
+    settings.shippingCharge = shippingCharge;
+    await settings.save();
+
+    res.json({
+      message: "Shipping charge updated",
+      shippingCharge
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// 🚚 GET SHIPPING CHARGE (BUYER)
+exports.getShippingCharge = async (req, res) => {
+  try {
+    const settings = await AdminSettings.findOne();
+    res.json({
+      shippingCharge: settings?.shippingCharge || 0
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// 🎟️ ADD COUPON (ADMIN)
+exports.addCoupon = async (req, res) => {
+  try {
+    const { code, discountPercent } = req.body;
+
+    let settings = await AdminSettings.findOne();
+    if (!settings) settings = new AdminSettings();
+    settings.coupons = settings.coupons || [];
+    settings.coupons.push({
+      code: code.toUpperCase(),
+      discountPercent
+    });
+
+    await settings.save();
+
+    res.json({ message: "Coupon added successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ❌ REMOVE COUPON (ADMIN)
+exports.removeCoupon = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    const settings = await AdminSettings.findOne();
+    if (!settings) {
+      return res.status(404).json({ message: "Settings not found" });
+    }
+
+    settings.coupons = settings.coupons.filter(
+      (c) => c.code !== code.toUpperCase()
+    );
+
+    await settings.save();
+
+    res.json({ message: "Coupon removed" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// 🎯 VALIDATE COUPON (BUYER)
+exports.validateCoupon = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    const settings = await AdminSettings.findOne();
+    const coupon = settings?.coupons.find(
+      (c) => c.code === code.toUpperCase()
+    );
+
+    if (!coupon) {
+      return res.status(400).json({ message: "Invalid coupon" });
+    }
+
+    res.json({
+      discountPercent: coupon.discountPercent
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

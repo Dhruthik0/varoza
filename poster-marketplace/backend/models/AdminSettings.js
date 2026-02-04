@@ -12,21 +12,41 @@ const adminSettingsSchema = new mongoose.Schema(
       default: 0
     },
 
+    // 🔹 SHIPPING CHARGE (FLAT)
+    shippingCharge: {
+      type: Number,
+      default: 0
+    },
+
+    // 🔹 COUPONS
+    coupons: [
+      {
+        code: {
+          type: String,
+          uppercase: true,
+          trim: true
+        },
+        discountPercent: Number
+      }
+    ],
+
+
     // 💳 UPI PAYMENT CONFIG (NEW)
     upiId: {
       type: String,
-      required: true
+      default: ""
     },
     upiQrUrl: {
       type: String,
-      required: true
+      default: ""
     },
 
     // 💰 SELLER PAYOUT RULE
     minimumPayout: {
       type: Number,
       default: 500
-    }
+    }  
+    
   },
   { timestamps: true }
 );
