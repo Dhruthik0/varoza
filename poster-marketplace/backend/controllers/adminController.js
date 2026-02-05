@@ -400,7 +400,8 @@ exports.addCoupon = async (req, res) => {
     settings.coupons = settings.coupons || [];
     settings.coupons.push({
       code: code.toUpperCase(),
-      discountPercent
+      discountPercent,
+      isActive: true
     });
 
     await settings.save();
