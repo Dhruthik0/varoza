@@ -105,7 +105,7 @@ const {
   getPendingOrders
 } = require("../controllers/adminController");
 
-// ✅ NEW – SHIPPING & COUPONS
+// ✅ SHIPPING & COUPONS
 const {
   setShippingCharge,
   getShippingCharge,
@@ -114,6 +114,9 @@ const {
   validateCoupon
 } = require("../controllers/adminController");
 
+/* ===========================
+   💳 PUBLIC (AUTH ONLY) – UPI DETAILS
+=========================== */
 router.get("/upi", authMiddleware, async (req, res) => {
   const settings = await AdminSettings.findOne();
 
@@ -124,6 +127,16 @@ router.get("/upi", authMiddleware, async (req, res) => {
   res.json({
     upiId: settings.upiId,
     upiQrUrl: settings.upiQrUrl
+  });
+});
+
+/* ===========================
+   🚚 PUBLIC (AUTH ONLY) – SHIPPING (BUYER)
+=========================== */
+router.get("/shipping/public", authMiddleware, async (req, res) => {
+  const settings = await AdminSettings.findOne();
+  res.json({
+    shippingCharge: settings?.shippingCharge || 0
   });
 });
 
@@ -147,19 +160,21 @@ router.post("/verify-payment", verifyPayment);
 router.post("/reject-payment", rejectPayment);
 router.post("/approve-order", approveOrderPayment);
 router.get("/pending-orders", getPendingOrders);
-router.get("/analytics", getAnalytics);// WITHDRAWALS
+router.get("/analytics", getAnalytics);
+
+// 💰 WITHDRAWALS
 router.get("/withdrawals", getWithdrawalRequests);
 router.post("/withdrawals/approve", approveWithdrawal);
 router.post("/withdrawals/reject", rejectWithdrawal);
 
 /* ===========================
- SHIPPING
+   🚚 SHIPPING (ADMIN)
 =========================== */
 router.post("/shipping", setShippingCharge);
 router.get("/shipping", getShippingCharge);
 
 /* ===========================
-COUPONS
+   🎟 COUPONS
 =========================== */
 router.post("/coupon", addCoupon);
 router.delete("/coupon/:code", removeCoupon);
