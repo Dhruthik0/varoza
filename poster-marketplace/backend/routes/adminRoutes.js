@@ -146,7 +146,7 @@ router.get("/shipping/public", async (req, res) => {
 /* ===========================
    🎟 PUBLIC (AUTH ONLY) – COUPON VALIDATION (BUYER)
 =========================== */
-router.post("/coupon/validate/public", authMiddleware, validateCoupon);
+router.post("/coupon/validate/public",validateCoupon);
 
 /* ===========================
    🔐 ADMIN-ONLY ROUTES
