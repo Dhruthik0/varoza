@@ -143,7 +143,10 @@ router.get("/shipping/public", async (req, res) => {
     res.status(500).json({ message: "Failed to fetch shipping charge" });
   }
 });
-
+/* ===========================
+   🎟 PUBLIC (AUTH ONLY) – COUPON VALIDATION (BUYER)
+=========================== */
+router.post("/coupon/validate/public", authMiddleware, validateCoupon);
 
 /* ===========================
    🔐 ADMIN-ONLY ROUTES
