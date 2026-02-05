@@ -454,3 +454,26 @@ exports.validateCoupon = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getCoupons = async (req, res) => {
+  const settings = await AdminSettings.findOne();
+  res.json(settings?.coupons || []);
+};
+
+exports.toggleCoupon = async (req, res) => {
+  const { code, isActive } = req.body;
+
+  const settings = await AdminSettings.findOne();
+  const coupon = settings.coupons.find(
+    c => c.code === code.toUpperCase()
+  );
+
+  if (!coupon) {
+    return res.status(404).json({ message: "Coupon not found" });
+  }
+
+  coupon.isActive = isActive;
+  await settings.save();
+
+  res.json({ message: "Coupon updated" });
+};
