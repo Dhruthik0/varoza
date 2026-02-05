@@ -133,16 +133,22 @@ exports.createOrder = async (req, res) => {
 
     // 🎟 Coupon lookup (optional)
     let couponDiscountPercent = 0;
+    let appliedCouponCode = null; // ➕ ADDED
+
     if (couponCode && settings?.coupons?.length) {
+      const normalizedCode = couponCode.toUpperCase(); // ➕ ADDED
+
       const coupon = settings.coupons.find(
-        (c) => c.code === couponCode.toUpperCase()
+        (c) => c.code === normalizedCode && c.isActive !== false // ➕ ADDED
       );
+
       if (coupon) {
         couponDiscountPercent = coupon.discountPercent;
+        appliedCouponCode = normalizedCode; // ➕ ADDED
       }
     }
 
-    const orders = [];//1
+    const orders = [];
     for (const item of cartItems) {
       const poster = await Poster.findById(item._id);
       if (!poster) continue;
@@ -173,10 +179,10 @@ exports.createOrder = async (req, res) => {
         deliveryAddress: address,
         phoneNumber: phone,
 
-        // ✅ NEW (safe additions)
+        // ✅ NEW (safe additions – already in your model)
         shippingCharge,
         discountAmount,
-        couponCode: couponCode || null,
+        couponCode: appliedCouponCode, // ➕ ADDED (clean + validated)
 
         paymentStatus: "verification_pending"
       });
