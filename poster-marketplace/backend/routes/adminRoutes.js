@@ -133,12 +133,17 @@ router.get("/upi", authMiddleware, async (req, res) => {
 /* ===========================
    🚚 PUBLIC (AUTH ONLY) – SHIPPING (BUYER)
 =========================== */
-router.get("/shipping/public", authMiddleware, async (req, res) => {
-  const settings = await AdminSettings.findOne();
-  res.json({
-    shippingCharge: settings?.shippingCharge || 0
-  });
+router.get("/shipping/public", async (req, res) => {
+  try {
+    const settings = await AdminSettings.findOne();
+    res.json({
+      shippingCharge: settings?.shippingCharge || 0
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch shipping charge" });
+  }
 });
+
 
 /* ===========================
    🔐 ADMIN-ONLY ROUTES
