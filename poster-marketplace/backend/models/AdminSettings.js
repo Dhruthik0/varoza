@@ -26,7 +26,11 @@ const adminSettingsSchema = new mongoose.Schema(
           uppercase: true,
           trim: true
         },
-        discountPercent: Number
+        discountPercent: Number,
+    isActive: {
+      type: Boolean,
+      default: true
+    }
       }
     ],
 
