@@ -90,6 +90,11 @@ const {
   approveWithdrawal,
   rejectWithdrawal
 } = require("../controllers/adminController");
+const {
+  getCoupons,
+  toggleCoupon
+} = require("../controllers/adminController");
+
 
 const {
   setMargin,
