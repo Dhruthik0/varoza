@@ -188,4 +188,8 @@ router.post("/coupon", addCoupon);
 router.delete("/coupon/:code", removeCoupon);
 router.post("/coupon/validate", validateCoupon);
 
+router.get("/coupons", getCoupons);
+router.post("/coupon/toggle", toggleCoupon);
+
+
 module.exports = router;
