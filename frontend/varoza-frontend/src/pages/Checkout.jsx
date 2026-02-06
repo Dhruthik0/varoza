@@ -6,7 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 
 export default function Checkout() {
-  const { cart, totalAmount, clearCart } = useCart();
+  const { cart, finalTotal, discountAmount, shippingCharge, coupon, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ export default function Checkout() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`
+            Authorization: `Bearer ${user?.token}` // ✅ CORRECT
           },
           body: JSON.stringify({
             cartItems: cart.map(item => ({
@@ -38,13 +38,14 @@ export default function Checkout() {
               quantity: item.quantity
             })),
             address,
-            phone
+            phone,
+            couponCode: coupon?.code || null
           })
         }
       );
 
       const data = await res.json();
-
+      
       if (!res.ok) throw new Error(data.message);
 
       clearCart();
@@ -58,9 +59,7 @@ export default function Checkout() {
 
   return (
     <div className="max-w-xl mx-auto px-6 py-16">
-      <h1 className="text-3xl text-purple-400 mb-8">
-        Delivery Details
-      </h1>
+      <h1 className="text-3xl text-purple-400 mb-8">Delivery Details</h1>
 
       <textarea
         placeholder="Delivery Address"
@@ -82,9 +81,7 @@ export default function Checkout() {
         disabled={loading}
         className="w-full bg-purple-600 py-4 rounded-xl hover:bg-purple-700"
       >
-        {loading
-          ? "Processing..."
-          : `Proceed to Pay ₹${totalAmount}`}
+        {loading ? "Processing..." : `Proceed to Pay ₹${finalTotal}`}
       </button>
     </div>
   );

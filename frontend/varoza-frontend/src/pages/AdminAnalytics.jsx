@@ -1,6 +1,8 @@
+
 import { useEffect, useState, useContext } from "react";
 import { getAnalytics } from "../services/adminService";
 import { AuthContext } from "../context/AuthContext";
+import AdminCoupons from "../components/AdminCoupons";
 
 export default function AdminAnalytics() {
   const { user } = useContext(AuthContext);
@@ -8,6 +10,9 @@ export default function AdminAnalytics() {
   const [loading, setLoading] = useState(true);
   const [margin, setMargin] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [shippingCharge, setShippingCharge] = useState("");
+const [updatingShipping, setUpdatingShipping] = useState(false);
+
 
   useEffect(() => {
     const loadAnalytics = async () => {
@@ -48,6 +53,35 @@ export default function AdminAnalytics() {
       setUpdating(false);
     }
   };
+
+  const updateShipping = async () => {
+  if (!shippingCharge) return alert("Enter shipping amount");
+
+  setUpdatingShipping(true);
+  try {
+    await fetch(
+      "https://varoza-backend.onrender.com/api/admin/set-shipping",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`
+        },
+        body: JSON.stringify({
+          shippingCharge: Number(shippingCharge)
+        })
+      }
+    );
+
+    alert("Shipping charge updated successfully");
+    setShippingCharge("");
+  } catch (err) {
+    alert("Failed to update shipping charge");
+  } finally {
+    setUpdatingShipping(false);
+  }
+};
+
 
   if (loading) {
     return (
@@ -104,6 +138,35 @@ export default function AdminAnalytics() {
         >
           {updating ? "Updating..." : "Update Margin"}
         </button>
+      </div>
+
+      {/* ================= SHIPPING CONTROL ================= */}
+<div className="bg-black/60 p-6 rounded-xl max-w-md border border-white/10 mt-10">
+  <h2 className="text-xl text-white mb-4">
+    Set Shipping Charge (₹)
+  </h2>
+
+  <input
+    type="number"
+    placeholder="Enter shipping amount"
+    value={shippingCharge}
+    onChange={(e) => setShippingCharge(e.target.value)}
+    className="w-full p-3 rounded bg-black/40 text-white mb-4"
+  />
+
+  <button
+    onClick={updateShipping}
+    disabled={updatingShipping}
+    className="w-full bg-purple-600 py-3 rounded hover:bg-purple-700 disabled:opacity-50"
+  >
+    {updatingShipping ? "Updating..." : "Update Shipping"}
+  </button>
+</div>
+
+
+      {/* ================= COUPONS SECTION (ADDED SPACING ONLY) ================= */}
+      <div className="mt-16">
+        <AdminCoupons />
       </div>
     </div>
   );
