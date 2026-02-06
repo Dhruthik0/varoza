@@ -163,6 +163,14 @@ router.post("/set-margin", setMargin);
 router.post("/set-discount", setDiscount);
 router.post("/set-upi", setUpiDetails);
 
+router.post(
+  "/set-shipping",
+  authMiddleware,
+  roleMiddleware("admin"),
+  setShippingCharge
+);
+
+
 router.get("/pending-sellers", getPendingSellers);
 router.post("/approve-seller", approveSeller);
 

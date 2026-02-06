@@ -364,20 +364,25 @@ exports.setShippingCharge = async (req, res) => {
   try {
     const { shippingCharge } = req.body;
 
+    if (shippingCharge < 0) {
+      return res.status(400).json({ message: "Invalid shipping charge" });
+    }
+
     let settings = await AdminSettings.findOne();
     if (!settings) settings = new AdminSettings();
 
-    settings.shippingCharge = shippingCharge;
+    settings.shippingCharge = Number(shippingCharge);
     await settings.save();
 
     res.json({
-      message: "Shipping charge updated",
-      shippingCharge
+      message: "Shipping charge updated successfully",
+      shippingCharge: settings.shippingCharge
     });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update shipping charge" });
   }
 };
+
 
 // 🚚 GET SHIPPING CHARGE (BUYER)
 exports.getShippingCharge = async (req, res) => {
@@ -401,7 +406,7 @@ exports.addCoupon = async (req, res) => {
     settings.coupons.push({
       code: code.toUpperCase(),
       discountPercent,
-      isActive: true
+      isActive:true
     });
 
     await settings.save();
