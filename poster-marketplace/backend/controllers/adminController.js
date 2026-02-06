@@ -445,12 +445,15 @@ exports.validateCoupon = async (req, res) => {
     const { code } = req.body;
 
     const settings = await AdminSettings.findOne();
+
     const coupon = settings?.coupons.find(
-      (c) => c.code === code.toUpperCase()
+      (c) => c.code === code.toUpperCase() && c.isActive === true
     );
 
     if (!coupon) {
-      return res.status(400).json({ message: "Invalid coupon" });
+      return res.status(400).json({
+        message: "Coupon is invalid or disabled"
+      });
     }
 
     res.json({
@@ -460,6 +463,7 @@ exports.validateCoupon = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 exports.getCoupons = async (req, res) => {
   const settings = await AdminSettings.findOne();
