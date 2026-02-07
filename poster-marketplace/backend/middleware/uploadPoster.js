@@ -8,10 +8,16 @@ const storage = new CloudinaryStorage({
     folder: "varoza/posters",
     resource_type: "image",
 
-    // 🚫 NO COMPRESSION
-    // 🚫 NO RESIZE
-    // 🚫 NO FORMAT CONVERSION
-    transformation: [],
+    // ✅ NO compression
+    // ✅ NO quality loss
+    // ✅ Only protects Cloudinary from insane dimensions
+    transformation: [
+      {
+        width: 8000,
+        height: 8000,
+        crop: "limit",
+      },
+    ],
 
     format: undefined, // keep original format
   },
@@ -20,11 +26,11 @@ const storage = new CloudinaryStorage({
 const uploadPoster = multer({
   storage,
   limits: {
-    fileSize: 15 * 1024 * 1024, // 15MB max (posters are big)
+    fileSize: 20 * 1024 * 1024, // ✅ 20MB hard limit
   },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith("image/")) {
-      cb(new Error("Only image files allowed"), false);
+      return cb(new Error("Only image files allowed"), false);
     }
     cb(null, true);
   },
