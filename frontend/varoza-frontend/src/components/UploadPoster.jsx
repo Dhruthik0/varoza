@@ -52,7 +52,15 @@ export default function UploadPoster({ onUpload }) {
         }
       );
 
-      const data = await res.json();
+      const text = await res.text();
+let data;
+
+try {
+  data = JSON.parse(text);
+} catch {
+  throw new Error("Server error during upload");
+}
+
 
       if (!res.ok) {
         throw new Error(data.message || "Upload failed");

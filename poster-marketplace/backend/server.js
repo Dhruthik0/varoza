@@ -84,3 +84,18 @@ const PORT = process.env.PORT || 5001;
 app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)
 );
+const multer = require("multer");
+
+app.use((err, req, res, next) => {
+  console.error("Global error:", err);
+
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  if (err.message) {
+    return res.status(500).json({ message: err.message });
+  }
+
+  res.status(500).json({ message: "Server error" });
+});
