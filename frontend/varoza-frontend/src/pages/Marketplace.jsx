@@ -38,7 +38,7 @@ export default function Marketplace() {
       </div>
 
       {/* 🔍 SEARCH BAR */}
-      <div className="max-w-7xl mx-auto px-6 mb-10">
+      {/* <div className="max-w-7xl mx-auto px-6 mb-10">
         <input
           type="text"
           placeholder="Search by title, category, or seller..."
@@ -49,7 +49,39 @@ export default function Marketplace() {
             fetchPosters(e.target.value);
           }}
         />
+      </div> */}
+            {/* 🔍 SEARCH BAR + CUSTOM POSTER BUTTON */}
+      <div className="max-w-7xl mx-auto px-6 mb-10 flex gap-4">
+        <input
+          type="text"
+          placeholder="Search by title, category, or seller..."
+          className="w-full px-5 py-3 rounded-xl bg-black/50 text-white border border-white/10"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            fetchPosters(e.target.value);
+          }}
+        />
+
+        {/* 🟢 CUSTOM POSTERS BUTTON */}
+        <a
+  href="https://wa.me/917899251692"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="relative px-6 py-3 rounded-xl font-semibold text-white whitespace-nowrap
+             bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600
+             bg-[length:200%_200%]
+             shadow-[0_0_20px_rgba(168,85,247,0.6)]
+             hover:shadow-[0_0_35px_rgba(168,85,247,0.9)]
+             hover:scale-105
+             transition-all duration-500
+             animate-gradient"
+>
+  ✨ Custom Posters
+</a>
+
       </div>
+
 
       {/* ⏳ LOADING */}
       {loading && (
