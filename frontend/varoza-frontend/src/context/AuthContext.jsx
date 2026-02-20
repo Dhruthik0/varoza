@@ -80,7 +80,7 @@ export function AuthProvider({ children }) {
   );
 }
 
-// ✅ THIS IS WHAT MyOrders, Payment, Checkout USE
+// ✅ THIS IS WHAT MyOrders, Payment, Checkout 
 export function useAuth() {
   return useContext(AuthContext);
 }
