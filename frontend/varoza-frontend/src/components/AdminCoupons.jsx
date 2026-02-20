@@ -9,7 +9,7 @@ export default function AdminCoupons() {
 
   const fetchCoupons = async () => {
     const res = await fetch(
-      "https://varoza-backend.onrender.com/api/admin/coupons",
+      `${import.meta.env.VITE_API_URL}/api/admin/coupons`,
       {
         headers: {
           Authorization: `Bearer ${user.token}`
@@ -29,7 +29,7 @@ export default function AdminCoupons() {
     if (!code || !discountPercent) return;
 
     await fetch(
-      "https://varoza-backend.onrender.com/api/admin/coupon",
+      `${import.meta.env.VITE_API_URL}/api/admin/coupon`,
       {
         method: "POST",
         headers: {
@@ -51,7 +51,7 @@ export default function AdminCoupons() {
 
   const toggleCoupon = async (code, isActive) => {
     await fetch(
-      "https://varoza-backend.onrender.com/api/admin/coupon/toggle",
+      `${import.meta.env.VITE_API_URL}/api/admin/coupon/toggle`,
       {
         method: "POST",
         headers: {

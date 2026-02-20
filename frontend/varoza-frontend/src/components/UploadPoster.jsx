@@ -42,7 +42,7 @@ export default function UploadPoster({ onUpload }) {
       formData.append("image", image); // 🔥 real file
 
       const res = await fetch(
-        "https://varoza-backend.onrender.com/api/seller/upload",
+        `${import.meta.env.VITE_API_URL}/api/seller/upload`,
         {
           method: "POST",
           headers: {
@@ -104,7 +104,7 @@ try {
       )}
 
       <input
-        placeholder="Title"
+        placeholder="Title(Do mention the poster size -A4,A3...)"
         className="w-full mb-3 p-3 rounded bg-black/40 text-white"
         value={title}
         onChange={(e) => setTitle(e.target.value)}

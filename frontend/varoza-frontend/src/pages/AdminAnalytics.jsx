@@ -34,7 +34,7 @@ const [updatingShipping, setUpdatingShipping] = useState(false);
 
     setUpdating(true);
     try {
-      await fetch("https://varoza-backend.onrender.com/api/admin/set-margin", {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/set-margin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@ const [updatingShipping, setUpdatingShipping] = useState(false);
   setUpdatingShipping(true);
   try {
     await fetch(
-      "https://varoza-backend.onrender.com/api/admin/set-shipping",
+      `${import.meta.env.VITE_API_URL}/api/admin/set-shipping`,
       {
         method: "POST",
         headers: {

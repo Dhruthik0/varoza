@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
+import { optimizeImage } from "../utils/optimizeImage";
 
 const storedUser = JSON.parse(localStorage.getItem("user"));
 const token = storedUser?.token;
@@ -27,7 +28,7 @@ export default function Cart() {
 
   // 🚚 FETCH SHIPPING
   useEffect(() => {
-    fetch("https://varoza-backend.onrender.com/api/admin/shipping/public")
+    fetch(`${import.meta.env.VITE_API_URL}/api/admin/shipping/public`)
       .then(res => res.json())
       .then(data => {
         setShippingCharge(data.shippingCharge || 0);
@@ -41,7 +42,7 @@ export default function Cart() {
 
     try {
       const res = await fetch(
-        "https://varoza-backend.onrender.com/api/admin/coupon/validate/public",
+        `${import.meta.env.VITE_API_URL}/api/admin/coupon/validate/public`,
         {
           method: "POST",
           headers: {
@@ -92,10 +93,11 @@ export default function Cart() {
 
             <div className="flex items-center gap-4">
               <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="w-20 h-20 rounded-lg object-cover"
-              />
+                  src={optimizeImage(item.imageUrl, 400)}
+                  alt={item.title}
+                  className="w-20 h-20 rounded-lg object-cover"
+                  loading="lazy"
+                />
 
               <div>
                 <p className="text-white font-semibold">{item.title}</p>

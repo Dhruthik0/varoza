@@ -1,4 +1,4 @@
-const API = "https://varoza-backend.onrender.com/api/posters";
+const API = `${import.meta.env.VITE_API_URL}/api/posters`;
 
 export const getApprovedPosters = async (search = "") => {
   const url = search

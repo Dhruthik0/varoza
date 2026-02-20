@@ -1,7 +1,8 @@
+
 import { Routes, Route } from "react-router-dom";
 import SmokeBackground from "./components/SmokeBackground";
 import Navbar from "./components/Navbar";
-
+import IntroVideo from "./pages/IntroVideo";
 import Marketplace from "./pages/Marketplace";
 import PosterDetail from "./pages/PosterDetail";
 import Login from "./pages/Login";
@@ -32,8 +33,12 @@ function App() {
       {/* 📄 Page Content */}
       <main className="relative z-10 pt-28">
         <Routes>
+          <Route path="/intro" element={<IntroVideo />} />
+
           {/* 🌍 PUBLIC ROUTES */}
-          <Route path="/" element={<Marketplace />} />
+          <Route path="/" element={<IntroVideo />} />
+<Route path="/marketplace" element={<Marketplace />} />
+
           <Route path="/poster/:id" element={<PosterDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

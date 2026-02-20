@@ -1,4 +1,4 @@
-const API = "https://varoza-backend.onrender.com/api/seller";
+const API = `${import.meta.env.VITE_API_URL}/api/seller`;
 
 export const getMyPosters = async (token) => {
   const res = await fetch(`${API}/my-posters`, {
@@ -30,7 +30,7 @@ export const uploadPoster = async (data, token) => {
   return res.json();
 };
 export const getWithdrawals = async (token) => {
-  const res = await fetch("https://varoza-backend.onrender.com/api/seller/withdrawals", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/seller/withdrawals`, {
     headers: {
       Authorization: `Bearer ${token}`
     }

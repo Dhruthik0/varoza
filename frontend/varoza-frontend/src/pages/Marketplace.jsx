@@ -10,7 +10,7 @@ export default function Marketplace() {
   const fetchPosters = async (query = "") => {
     setLoading(true);
     const res = await fetch(
-      `https://varoza-backend.onrender.com/api/posters/approved?search=${encodeURIComponent(
+      `${import.meta.env.VITE_API_URL}/api/posters/approved?search=${encodeURIComponent(
         query
       )}`
     );

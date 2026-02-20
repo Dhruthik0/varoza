@@ -1,4 +1,4 @@
-const API = "https://varoza-backend.onrender.com/api/admin";
+const API = `${import.meta.env.VITE_API_URL}/api/admin`;
 
 // 🧑‍🎨 SELLERS
 export const getPendingSellers = async (token) => {
@@ -56,7 +56,7 @@ export const getPendingOrders = async (token) => {
 
 export const approveOrderPayment = async (orderId, token) => {
   const res = await fetch(
-    "https://varoza-backend.onrender.com/api/admin/approve-order",
+    `${import.meta.env.VITE_API_URL}/api/admin/approve-order`,
     {
       method: "POST",
       headers: {
@@ -75,7 +75,7 @@ export const approveOrderPayment = async (orderId, token) => {
 };
 export const getAnalytics = async (token) => {
   const res = await fetch(
-    "https://varoza-backend.onrender.com/api/admin/analytics",
+    `${import.meta.env.VITE_API_URL}/api/admin/analytics`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

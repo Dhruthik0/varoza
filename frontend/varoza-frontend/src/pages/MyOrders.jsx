@@ -10,7 +10,7 @@ export default function MyOrders() {
   useEffect(() => {
     if (!user?.token) return;
 
-    fetch("https://varoza-backend.onrender.com/api/orders/my-orders", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/orders/my-orders`,{
       headers: {
         Authorization: `Bearer ${user.token}`
       }

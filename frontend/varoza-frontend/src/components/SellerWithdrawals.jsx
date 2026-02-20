@@ -14,7 +14,7 @@ export default function SellerWithdrawals() {
   const fetchWithdrawals = async () => {
     try {
       const res = await fetch(
-        "https://varoza-backend.onrender.com/api/seller/withdrawals",
+        `${import.meta.env.VITE_API_URL}/api/seller/withdrawals`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -45,7 +45,7 @@ export default function SellerWithdrawals() {
       setSubmitting(true);
 
       const res = await fetch(
-        "https://varoza-backend.onrender.com/api/seller/withdraw",
+        `${import.meta.env.VITE_API_URL}/api/seller/withdraw`,
         {
           method: "POST",
           headers: {

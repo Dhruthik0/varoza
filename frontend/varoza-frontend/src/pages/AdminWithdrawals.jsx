@@ -11,7 +11,7 @@ export default function AdminWithdrawals() {
   const loadRequests = async () => {
     try {
       const res = await fetch(
-        "https://varoza-backend.onrender.com/api/admin/withdrawals",
+        `${import.meta.env.VITE_API_URL}/api/admin/withdrawals`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`
@@ -32,7 +32,7 @@ export default function AdminWithdrawals() {
   const markPaid = async (id) => {
     try {
       const res = await fetch(
-        "https://varoza-backend.onrender.com/api/admin/withdrawals/approve",
+        `${import.meta.env.VITE_API_URL}/api/admin/withdrawals/approve`,
         {
           method: "POST",
           headers: {
@@ -59,7 +59,7 @@ export default function AdminWithdrawals() {
   const reject = async (id) => {
     try {
       const res = await fetch(
-        "https://varoza-backend.onrender.com/api/admin/withdrawals/reject",
+        `${import.meta.env.VITE_API_URL}/api/admin/withdrawals/reject`,
         {
           method: "POST",
           headers: {

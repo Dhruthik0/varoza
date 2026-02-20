@@ -1,4 +1,4 @@
-const API = "https://varoza-backend.onrender.com/api/orders";
+const API = `${import.meta.env.VITE_API_URL}/api/orders`;
 
 export const createOrder = async (data, token) => {
   const res = await fetch(`${API}/create`, {

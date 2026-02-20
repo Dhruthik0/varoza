@@ -1,4 +1,4 @@
-const API = "https://varoza-backend.onrender.com/api/auth";
+const API = `${import.meta.env.VITE_API_URL}/api/auth`;
 
 export const loginUser = async ({ email, password }) => {
   const res = await fetch(`${API}/login`, {
