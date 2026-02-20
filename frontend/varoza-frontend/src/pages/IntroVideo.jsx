@@ -15,7 +15,7 @@ function IntroVideo() {
   const timer = setTimeout(() => {
     sessionStorage.setItem("varoza_intro_seen", "true");
     navigate("/marketplace", { replace: true });
-  }, 8500);
+  }, 9500);
 
   return () => clearTimeout(timer);
 }, [navigate]);
