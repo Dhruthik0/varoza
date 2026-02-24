@@ -56,13 +56,29 @@ export default function Cart() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
-      setDiscountPercent(data.discountPercent);
+      // ✅ HANDLE BOTH COUPON TYPES
 
-      // ✅ REQUIRED LINE (GLOBAL STATE)
-      setCoupon({
-        code: couponCode,
-        discountPercent: data.discountPercent
-      });
+      if (data.type === "PERCENTAGE") {
+        setDiscountPercent(data.discountPercent);
+
+        setCoupon({
+          code: couponCode,
+          type: "PERCENTAGE",
+          discountPercent: data.discountPercent
+        });
+      }
+
+      if (data.type === "BUY_X_GET_Y") {
+        // no percentage display for this type
+        setDiscountPercent(0);
+
+        setCoupon({
+          code: couponCode,
+          type: "BUY_X_GET_Y",
+          buyQuantity: data.buyQuantity,
+          freeQuantity: data.freeQuantity
+        });
+      }
 
     } catch (err) {
       alert(err.message || "Invalid coupon");
@@ -93,11 +109,11 @@ export default function Cart() {
 
             <div className="flex items-center gap-4">
               <img
-                  src={optimizeImage(item.imageUrl, 400)}
-                  alt={item.title}
-                  className="w-20 h-20 rounded-lg object-cover"
-                  loading="lazy"
-                />
+                src={optimizeImage(item.imageUrl, 400)}
+                alt={item.title}
+                className="w-20 h-20 rounded-lg object-cover"
+                loading="lazy"
+              />
 
               <div>
                 <p className="text-white font-semibold">{item.title}</p>
@@ -107,7 +123,6 @@ export default function Cart() {
                 </p>
               </div>
             </div>
-
 
             <div className="flex gap-2 items-center">
               <button
@@ -191,4 +206,3 @@ export default function Cart() {
     </div>
   );
 }
- 

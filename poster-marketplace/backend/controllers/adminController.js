@@ -109,25 +109,43 @@ exports.verifyPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    const order = await Order.findById(orderId).populate("poster");
+    const order = await Order.findById(orderId)
+      .populate("items.poster");
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Mark order as paid
+    if (order.paymentStatus === "paid" || order.paymentStatus === "delivering") {
+      return res.status(400).json({
+        message: "Order already processed"
+      });
+    }
+
+    // 1️⃣ Mark as paid
     order.paymentStatus = "paid";
     await order.save();
 
-    // Credit seller wallet
-    const seller = await User.findById(order.poster.seller);
-    seller.walletBalance += order.sellerEarning;
-    await seller.save();
+    // 2️⃣ Credit each seller
+    for (const item of order.items) {
+      const seller = await User.findById(item.poster.seller);
+      if (!seller) continue;
 
-    res.json({ message: "Payment verified & seller credited" });
+      seller.walletBalance += item.sellerEarning;
+      await seller.save();
+    }
+
+    res.json({
+      message: "Payment verified & sellers credited",
+      order
+    });
+
   } catch (error) {
+    console.error("Verify payment error:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // REJECT PAYMENT (ADMIN)
 exports.rejectPayment = async (req, res) => {
@@ -166,35 +184,14 @@ exports.getPendingPosters = async (req, res) => {
 };
 
 
-// ✅ ADMIN APPROVES PAYMENT
-// exports.approveOrderPayment = async (req, res) => {
-//   try {
-//     const { orderId } = req.body;
 
-//     const order = await Order.findById(orderId);
-//     if (!order) {
-//       return res.status(404).json({ message: "Order not found" });
-//     }
-
-//     order.paymentStatus = "paid";
-//     order.deliveryStatus = "delivering";
-
-//     await order.save();
-
-//     res.json({
-//       message: "Payment approved, delivery started"
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to approve payment" });
-//   }
-// };
 exports.getPendingOrders = async (req, res) => {
   try {
     const orders = await Order.find({
       paymentStatus: "verification_pending"
     })
       .populate("buyer", "name email")
-      .populate("poster", "title price");
+      .populate("items.poster", "title price imageUrl")
 
     res.json(orders);
   } catch (error) {
@@ -206,33 +203,38 @@ exports.approveOrderPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    const order = await Order.findById(orderId).populate("poster");
+    const order = await Order.findById(orderId)
+      .populate("items.poster");
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // ✅ Prevent double credit
     if (order.paymentStatus !== "verification_pending") {
       return res.status(400).json({
         message: "Order already processed"
       });
     }
 
-    // 1️⃣ Update order status
+    // Credit sellers
+    for (const item of order.items) {
+      const seller = await User.findById(item.poster.seller);
+      if (!seller) continue;
+
+      seller.walletBalance += item.sellerEarning;
+      await seller.save();
+    }
+
     order.paymentStatus = "delivering";
     await order.save();
 
-    // 2️⃣ Credit seller wallet
-    const seller = await User.findById(order.poster.seller);
-
-    seller.walletBalance += order.sellerEarning;
-    await seller.save();
-
     res.json({
-      message: "Payment approved, seller credited, delivery started",
+      message: "Payment approved, sellers credited, delivery started",
       order
     });
+
   } catch (error) {
+    console.error("Approve order error:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -247,17 +249,27 @@ exports.getAnalytics = async (req, res) => {
     const totalOrders = orders.length;
 
     const totalRevenue = orders.reduce(
-      (sum, o) => sum + o.totalAmount,
+      (sum, o) => sum + (o.totalAmount || 0),
       0
     );
 
     const totalAdminMargin = orders.reduce(
-      (sum, o) => sum + (o.adminMargin || 0),
+      (sum, o) =>
+        sum +
+        (o.items || []).reduce(
+          (itemSum, item) => itemSum + (item.adminMargin || 0),
+          0
+        ),
       0
     );
 
     const totalSellerEarning = orders.reduce(
-      (sum, o) => sum + (o.sellerEarning || 0),
+      (sum, o) =>
+        sum +
+        (o.items || []).reduce(
+          (itemSum, item) => itemSum + (item.sellerEarning || 0),
+          0
+        ),
       0
     );
 
@@ -267,6 +279,7 @@ exports.getAnalytics = async (req, res) => {
       totalAdminMargin,
       totalSellerEarning
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -398,16 +411,41 @@ exports.getShippingCharge = async (req, res) => {
 // 🎟️ ADD COUPON (ADMIN)
 exports.addCoupon = async (req, res) => {
   try {
-    const { code, discountPercent } = req.body;
+    const { code, type, discountPercent, buyQuantity, freeQuantity } = req.body;
 
     let settings = await AdminSettings.findOne();
     if (!settings) settings = new AdminSettings();
+
     settings.coupons = settings.coupons || [];
-    settings.coupons.push({
+
+    const newCoupon = {
       code: code.toUpperCase(),
-      discountPercent,
-      isActive:true
-    });
+      type: type || "PERCENTAGE",
+      isActive: true
+    };
+
+    // ✅ If Percentage Coupon
+    if (type === "PERCENTAGE" || !type) {
+      if (!discountPercent) {
+        return res.status(400).json({
+          message: "Discount percent is required"
+        });
+      }
+      newCoupon.discountPercent = discountPercent;
+    }
+
+    // ✅ If Buy X Get Y Coupon
+    if (type === "BUY_X_GET_Y") {
+      if (!buyQuantity || !freeQuantity) {
+        return res.status(400).json({
+          message: "Buy and Free quantities are required"
+        });
+      }
+      newCoupon.buyQuantity = buyQuantity;
+      newCoupon.freeQuantity = freeQuantity;
+    }
+
+    settings.coupons.push(newCoupon);
 
     await settings.save();
 
@@ -456,9 +494,23 @@ exports.validateCoupon = async (req, res) => {
       });
     }
 
-    res.json({
-      discountPercent: coupon.discountPercent
-    });
+    // ✅ If Percentage Coupon
+    if (coupon.type === "PERCENTAGE") {
+      return res.json({
+        type: "PERCENTAGE",
+        discountPercent: coupon.discountPercent
+      });
+    }
+
+    // ✅ If Buy X Get Y Coupon
+    if (coupon.type === "BUY_X_GET_Y") {
+      return res.json({
+        type: "BUY_X_GET_Y",
+        buyQuantity: coupon.buyQuantity,
+        freeQuantity: coupon.freeQuantity
+      });
+    }
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

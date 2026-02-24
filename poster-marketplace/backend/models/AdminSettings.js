@@ -19,21 +19,38 @@ const adminSettingsSchema = new mongoose.Schema(
     },
 
     // 🔹 COUPONS
-    coupons: [
-      {
-        code: {
-          type: String,
-          uppercase: true,
-          trim: true
-        },
-        discountPercent: Number,
+   coupons: [
+  {
+    code: {
+      type: String,
+      uppercase: true,
+      trim: true
+    },
+
+    type: {
+      type: String,
+      enum: ["PERCENTAGE", "BUY_X_GET_Y"],
+      default: "PERCENTAGE"
+    },
+
+    discountPercent: {
+      type: Number
+    },
+
+    buyQuantity: {
+      type: Number
+    },
+
+    freeQuantity: {
+      type: Number
+    },
+
     isActive: {
       type: Boolean,
       default: true
     }
-      }
-    ],
-
+  }
+],
 
     // 💳 UPI PAYMENT CONFIG (NEW)
     upiId: {
