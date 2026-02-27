@@ -92,7 +92,7 @@ export default function Marketplace() {
 
       {/* 🖼️ POSTER GRID */}
       <div className="max-w-7xl mx-auto px-6 pb-20">
-        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {posters.map((poster) => (
             <PosterCard key={poster._id} poster={poster} />
           ))}

@@ -45,7 +45,7 @@ export default function PosterCard({ poster }) {
       <img
         src={optimizeImage(poster.imageUrl, 600)} // ✅ UPDATED
         alt={poster.title}
-        className="h-56 w-full object-cover"
+        className="w-full aspect-[3/4] object-cover"
         loading="lazy" // ✅ ADDED
       />
 
