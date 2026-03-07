@@ -11,6 +11,11 @@ export default function SellerWithdrawals() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat("en-IN", {
+      maximumFractionDigits: 2
+    }).format(Number(value || 0));
+
   const fetchWithdrawals = async () => {
     try {
       const res = await fetch(
@@ -77,83 +82,84 @@ export default function SellerWithdrawals() {
   };
 
   if (loading) {
-    return <p className="mt-12 text-gray-400">Loading withdrawals...</p>;
+    return <p className="mt-12 text-sm font-semibold uppercase tracking-[0.14em] text-black/55">Loading withdrawals...</p>;
   }
 
   return (
-    <div className="mt-16">
-      <h2 className="text-xl text-purple-400 mb-4">
-        Withdrawal Requests
-      </h2>
+    <div id="seller-withdrawals" className="mt-14 scroll-mt-32">
+      <h2 className="font-['Cinzel'] text-2xl font-bold text-[#58181F] md:text-[1.9rem]">Withdrawal Requests</h2>
+      <p className="mt-1 text-sm font-semibold uppercase tracking-[0.14em] text-black/50">Minimum request ₹500</p>
 
-      {/* 🔹 REQUEST FORM */}
-      <div className="bg-black/60 p-5 rounded-xl border border-white/10 mb-6">
-        <p className="text-gray-300 mb-3">
-          Request withdrawal (min ₹500)
-        </p>
+      <div className="mt-5 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="section-panel card-shadow overflow-hidden">
+          <div className="border-b border-black/10 bg-gradient-to-r from-[#fffdf8] to-[#f7e7ce] px-5 py-4">
+            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-black/55">Create Request</p>
+          </div>
+          <div className="p-5">
+            <label className="text-xs font-extrabold uppercase tracking-[0.2em] text-black/55">Amount (₹)</label>
+            <input
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="mt-2 h-12 w-full rounded-xl border border-black/15 bg-[#fffdf8] px-4 text-black outline-none transition focus:border-[#58181F]"
+            />
 
-        <input
-          type="number"
-          placeholder="Amount (₹)"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full mb-3 px-4 py-2 rounded bg-black/80 text-white border border-white/10"
-        />
+            <label className="mt-4 block text-xs font-extrabold uppercase tracking-[0.2em] text-black/55">UPI ID</label>
+            <input
+              type="text"
+              placeholder="name@upi"
+              value={upiId}
+              onChange={(e) => setUpiId(e.target.value)}
+              className="mt-2 h-12 w-full rounded-xl border border-black/15 bg-[#fffdf8] px-4 text-black outline-none transition focus:border-[#58181F]"
+            />
 
-        <input
-          type="text"
-          placeholder="UPI ID (e.g. name@upi)"
-          value={upiId}
-          onChange={(e) => setUpiId(e.target.value)}
-          className="w-full mb-4 px-4 py-2 rounded bg-black/80 text-white border border-white/10"
-        />
-
-        <button
-          onClick={submitWithdrawal}
-          disabled={submitting}
-          className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700 disabled:opacity-50"
-        >
-          {submitting ? "Submitting..." : "Request Withdrawal"}
-        </button>
-      </div>
-
-      {/* 🔹 REQUEST STATUS LIST */}
-      {withdrawals.length === 0 ? (
-        <p className="text-gray-400">No withdrawal requests yet</p>
-      ) : (
-        <div className="space-y-4">
-          {withdrawals.map((req) => (
-            <div
-              key={req._id}
-              className="bg-black/60 p-4 rounded-xl border border-white/10"
+            <button
+              onClick={submitWithdrawal}
+              disabled={submitting}
+              className="action-button mt-5 px-6 py-3 text-xs uppercase tracking-[0.12em] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <p className="text-white font-semibold">
-                ₹{req.amount}
-              </p>
-
-              <p className="text-gray-400 text-sm">
-                UPI: {req.upiId}
-              </p>
-
-              <p
-                className={`mt-2 font-semibold ${
-                  req.status === "paid"
-                    ? "text-green-400"
-                    : req.status === "rejected"
-                    ? "text-red-400"
-                    : "text-yellow-400"
-                }`}
-              >
-                Status: {req.status.toUpperCase()}
-              </p>
-
-              <p className="text-gray-500 text-xs mt-1">
-                {new Date(req.createdAt).toLocaleString()}
-              </p>
-            </div>
-          ))}
+              {submitting ? "Submitting..." : "Request Withdrawal"}
+            </button>
+          </div>
         </div>
-      )}
+
+        <div className="section-panel card-shadow overflow-hidden">
+          <div className="border-b border-black/10 bg-white px-5 py-4">
+            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-black/55">Request History</p>
+          </div>
+
+          {withdrawals.length === 0 ? (
+            <p className="p-5 text-sm font-semibold uppercase tracking-[0.14em] text-black/55">No withdrawal requests yet</p>
+          ) : (
+            <div className="h-[340px] space-y-3 overflow-y-auto p-5">
+              {withdrawals.map((req) => (
+                <div key={req._id} className="rounded-2xl border border-black/10 bg-[#fffdf8] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-xl font-extrabold text-black">₹{formatCurrency(req.amount)}</p>
+                    <p
+                      className={`rounded-full px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.1em] ${
+                        req.status === "paid"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : req.status === "rejected"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {req.status}
+                    </p>
+                  </div>
+
+                  <p className="mt-2 text-sm text-black/65">UPI: {req.upiId}</p>
+                  <p className="mt-1 text-xs font-semibold tracking-[0.06em] text-black/45">
+                    {new Date(req.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

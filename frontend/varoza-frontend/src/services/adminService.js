@@ -43,6 +43,27 @@ export const approvePoster = async (posterId, token) => {
   });
   return res.json();
 };
+
+export const rejectPoster = async (posterId, token) => {
+  const res = await fetch(`${API}/reject-poster`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ posterId })
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    const error = new Error(data.message || "Failed to reject poster");
+    error.status = res.status;
+    throw error;
+  }
+
+  return data;
+};
 export const getPendingOrders = async (token) => {
   const res = await fetch(`${API}/pending-orders`, {
     headers: {

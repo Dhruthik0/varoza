@@ -1,96 +1,12 @@
-
-
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { useCart } from "../context/CartContext";
-// import { useAuth } from "../context/AuthContext";
-
-// export default function Checkout() {
-//   const { cart, finalTotal, discountAmount, shippingCharge, coupon, clearCart } = useCart();
-//   const { user } = useAuth();
-//   const navigate = useNavigate();
-
-//   const [address, setAddress] = useState("");
-//   const [phone, setPhone] = useState("");
-//   const [loading, setLoading] = useState(false);
-
-//   const submitOrder = async () => {
-//     if (!address || !phone) {
-//       alert("Please enter delivery details");
-//       return;
-//     }
-
-//     setLoading(true);
-
-//     try {
-//       const res = await fetch(
-//         `${import.meta.env.VITE_API_URL}/api/orders/create`,
-//         {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${user?.token}` // ✅ CORRECT
-//           },
-//           body: JSON.stringify({
-//             cartItems: cart.map(item => ({
-//               _id: item._id,
-//               price: item.price,
-//               quantity: item.quantity
-//             })),
-//             address,
-//             phone,
-//             couponCode: coupon?.code || null
-//           })
-//         }
-//       );
-
-//       const data = await res.json();
-      
-//       if (!res.ok) throw new Error(data.message);
-
-//       clearCart();
-//       navigate("/payment");
-//     } catch (err) {
-//       alert(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="max-w-xl mx-auto px-6 py-16">
-//       <h1 className="text-3xl text-purple-400 mb-8">Delivery Details</h1>
-
-//       <textarea
-//         placeholder="Delivery Address"
-//         value={address}
-//         onChange={(e) => setAddress(e.target.value)}
-//         className="w-full p-4 mb-4 rounded bg-black/40 text-white"
-//       />
-
-//       <input
-//         type="tel"
-//         placeholder="Phone Number"
-//         value={phone}
-//         onChange={(e) => setPhone(e.target.value)}
-//         className="w-full p-4 mb-6 rounded bg-black/40 text-white"
-//       />
-
-//       <button
-//         onClick={submitOrder}
-//         disabled={loading}
-//         className="w-full bg-purple-600 py-4 rounded-xl hover:bg-purple-700"
-//       >
-//         {loading ? "Processing..." : `Proceed to Pay ₹${finalTotal}`}
-//       </button>
-//     </div>
-//   );
-// }
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: 0
+  }).format(Number(value || 0));
 
 export default function Checkout() {
   const { cart, finalTotal, coupon, clearCart } = useCart();
@@ -133,35 +49,29 @@ Phone: ${phone}
     setLoading(true);
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/orders/create`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`
-          },
-          body: JSON.stringify({
-            cartItems: cart.map(item => ({
-              _id: item._id,
-              price: item.price,
-              quantity: item.quantity
-            })),
-            address: formattedAddress,
-            phone,
-            couponCode: coupon?.code || null
-          })
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`
+        },
+        body: JSON.stringify({
+          cartItems: cart.map((item) => ({
+            _id: item._id,
+            price: item.price,
+            quantity: item.quantity
+          })),
+          address: formattedAddress,
+          phone,
+          couponCode: coupon?.code || null
+        })
+      });
 
-   
-   
-   const data = await res.json();
+      const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
       clearCart();
       navigate("/payment");
-
     } catch (err) {
       alert(err.message);
     } finally {
@@ -169,105 +79,82 @@ Phone: ${phone}
     }
   };
 
-return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0f0f1a] to-black px-4 py-16">
-    
-    <div className="w-full max-w-2xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-10">
-      
-      <h1 className="text-3xl font-semibold text-white mb-8">
-        Delivery Information
-      </h1>
+  const inputClass =
+    "h-12 w-full rounded-xl border border-black/15 bg-white px-4 text-black outline-none transition focus:border-[#58181F]";
 
-      {/* Address Line 1 */}
-      <div className="mb-5">
-        <label className="block text-sm text-gray-400 mb-2">
-          Address Line 1 *
-        </label>
-        <input
-          placeholder="House No, Street Name"
-          value={addressLine1}
-          onChange={(e) => setAddressLine1(e.target.value)}
-          className="w-full p-4 rounded-lg bg-black/40 border border-white/10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none text-white transition"
-        />
-      </div>
+  return (
+    <div className="varoza-container py-8 md:py-12">
+      <div className="mx-auto max-w-3xl rounded-2xl border border-black/10 bg-white p-5 card-shadow sm:p-8">
+        <h1 className="font-['Cinzel'] text-3xl font-bold text-black md:text-4xl">Delivery Details</h1>
+        <p className="mt-2 text-black/65">Fill your shipping details to place the order.</p>
 
-      {/* Address Line 2 */}
-      <div className="mb-5">
-        <label className="block text-sm text-gray-400 mb-2">
-          Address Line 2 (Optional)
-        </label>
-        <input
-          placeholder="Apartment, Landmark, Area"
-          value={addressLine2}
-          onChange={(e) => setAddressLine2(e.target.value)}
-          className="w-full p-4 rounded-lg bg-black/40 border border-white/10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none text-white transition"
-        />
-      </div>
+        <div className="mt-6 space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-bold uppercase tracking-[0.14em] text-black/60">Address line 1 *</label>
+            <input
+              placeholder="House no, street, locality"
+              value={addressLine1}
+              onChange={(e) => setAddressLine1(e.target.value)}
+              className={inputClass}
+            />
+          </div>
 
-      {/* City + State */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-        <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            City *
-          </label>
-          <input
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="w-full p-4 rounded-lg bg-black/40 border border-white/10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none text-white transition"
-          />
+          <div>
+            <label className="mb-2 block text-sm font-bold uppercase tracking-[0.14em] text-black/60">Address line 2</label>
+            <input
+              placeholder="Apartment, landmark (optional)"
+              value={addressLine2}
+              onChange={(e) => setAddressLine2(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-bold uppercase tracking-[0.14em] text-black/60">City *</label>
+              <input value={city} onChange={(e) => setCity(e.target.value)} className={inputClass} />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-bold uppercase tracking-[0.14em] text-black/60">State *</label>
+              <input value={stateName} onChange={(e) => setStateName(e.target.value)} className={inputClass} />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-bold uppercase tracking-[0.14em] text-black/60">PIN code *</label>
+              <input
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+                maxLength={6}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-bold uppercase tracking-[0.14em] text-black/60">Phone number *</label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                maxLength={10}
+                className={inputClass}
+              />
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            State *
-          </label>
-          <input
-            value={stateName}
-            onChange={(e) => setStateName(e.target.value)}
-            className="w-full p-4 rounded-lg bg-black/40 border border-white/10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none text-white transition"
-          />
+        <div className="mt-7 rounded-xl border border-black/10 bg-[#F7E7CE] p-4">
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-black/60">Payable amount</p>
+          <p className="mt-1 text-3xl font-extrabold text-black">Rs. {formatCurrency(finalTotal)}</p>
         </div>
+
+        <button
+          onClick={submitOrder}
+          disabled={loading}
+          className="action-button mt-6 h-12 w-full text-sm uppercase tracking-[0.16em] disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {loading ? "Processing..." : "Proceed to Payment"}
+        </button>
       </div>
-
-      {/* PIN + Phone */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-        <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            PIN Code *
-          </label>
-          <input
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-            maxLength={6}
-            className="w-full p-4 rounded-lg bg-black/40 border border-white/10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none text-white transition"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Phone Number *
-          </label>
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-            maxLength={10}
-            className="w-full p-4 rounded-lg bg-black/40 border border-white/10 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none text-white transition"
-          />
-        </div>
-      </div>
-
-      {/* Button */}
-      <button
-        onClick={submitOrder}
-        disabled={loading}
-        className="w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 transition-all duration-300 text-white font-semibold shadow-lg"
-      >
-        {loading ? "Processing..." : `Proceed to Pay ₹${finalTotal}`}
-      </button>
-
     </div>
-  </div>
-);
- }
-
-
+  );
+}

@@ -1,6 +1,11 @@
 const Poster = require("../models/Poster");
 const User = require("../models/User");
 const Order = require("../models/Order");
+const {
+  CATEGORY_LABELS,
+  normalizeSellerCategoryInput,
+  mapRawToCategoryLabel
+} = require("../utils/categories");
 
 
 // 🔍 CHECK SELLER APPROVAL
@@ -20,6 +25,13 @@ exports.uploadPoster = async (req, res) => {
     }
 
     const { title, price, category } = req.body;
+    const normalizedCategory = normalizeSellerCategoryInput(category);
+
+    if (!normalizedCategory) {
+      return res.status(400).json({
+        message: `Invalid category. Use one of: ${CATEGORY_LABELS.join(", ")}`
+      });
+    }
 
     // ✅ SAFETY CHECK (important)
     if (!req.file) {
@@ -34,7 +46,7 @@ exports.uploadPoster = async (req, res) => {
       title,
       imageUrl,
       price,
-      category,
+      category: normalizedCategory,
       seller: req.user.id,
       approved: false // ✅ poster goes to admin approval
     });
@@ -55,8 +67,16 @@ exports.uploadPoster = async (req, res) => {
 // 📄 GET MY POSTERS
 exports.getMyPosters = async (req, res) => {
   try {
-    const posters = await Poster.find({ seller: req.user.id });
-    res.json(posters);
+    const posters = await Poster.find({ seller: req.user.id }).sort({ createdAt: -1 });
+    const normalizedPosters = posters.map((poster) => {
+      const data = poster.toObject();
+      return {
+        ...data,
+        category: mapRawToCategoryLabel(data.category, data.title)
+      };
+    });
+
+    res.json(normalizedPosters);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

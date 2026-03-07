@@ -1,5 +1,5 @@
-
-import { useEffect, useState, useContext } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { getAnalytics } from "../services/adminService";
 import { AuthContext } from "../context/AuthContext";
 import AdminCoupons from "../components/AdminCoupons";
@@ -8,33 +8,43 @@ export default function AdminAnalytics() {
   const { user } = useContext(AuthContext);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [margin, setMargin] = useState("");
-  const [updating, setUpdating] = useState(false);
-  const [shippingCharge, setShippingCharge] = useState("");
-const [updatingShipping, setUpdatingShipping] = useState(false);
 
+  const [margin, setMargin] = useState("");
+  const [updatingMargin, setUpdatingMargin] = useState(false);
+
+  const [shippingCharge, setShippingCharge] = useState("");
+  const [updatingShipping, setUpdatingShipping] = useState(false);
+
+  const loadAnalytics = useCallback(async () => {
+    if (!user?.token) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await getAnalytics(user.token);
+      setAnalytics(data || {});
+    } catch (err) {
+      console.error("Analytics error", err);
+      toast.error("Failed to load analytics");
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.token]);
 
   useEffect(() => {
-    const loadAnalytics = async () => {
-      try {
-        const data = await getAnalytics(user.token);
-        setAnalytics(data);
-      } catch (err) {
-        console.error("Analytics error", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadAnalytics();
-  }, []);
+  }, [loadAnalytics]);
 
   const updateMargin = async () => {
-    if (!margin) return alert("Enter margin percentage");
+    if (!margin) {
+      toast.error("Enter margin percentage");
+      return;
+    }
 
-    setUpdating(true);
+    setUpdatingMargin(true);
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/admin/set-margin`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/set-margin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,23 +55,31 @@ const [updatingShipping, setUpdatingShipping] = useState(false);
         })
       });
 
-      alert("Seller margin updated successfully");
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update margin");
+      }
+
+      toast.success("Seller margin updated successfully");
       setMargin("");
+      loadAnalytics();
     } catch (err) {
-      alert("Failed to update margin");
+      toast.error(err.message || "Failed to update margin");
     } finally {
-      setUpdating(false);
+      setUpdatingMargin(false);
     }
   };
 
   const updateShipping = async () => {
-  if (!shippingCharge) return alert("Enter shipping amount");
+    if (!shippingCharge) {
+      toast.error("Enter shipping amount");
+      return;
+    }
 
-  setUpdatingShipping(true);
-  try {
-    await fetch(
-      `${import.meta.env.VITE_API_URL}/api/admin/set-shipping`,
-      {
+    setUpdatingShipping(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/set-shipping`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,115 +88,119 @@ const [updatingShipping, setUpdatingShipping] = useState(false);
         body: JSON.stringify({
           shippingCharge: Number(shippingCharge)
         })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update shipping charge");
       }
-    );
 
-    alert("Shipping charge updated successfully");
-    setShippingCharge("");
-  } catch (err) {
-    alert("Failed to update shipping charge");
-  } finally {
-    setUpdatingShipping(false);
-  }
-};
-
+      toast.success("Shipping charge updated successfully");
+      setShippingCharge("");
+    } catch (err) {
+      toast.error(err.message || "Failed to update shipping charge");
+    } finally {
+      setUpdatingShipping(false);
+    }
+  };
 
   if (loading) {
     return (
-      <div className="text-center text-gray-400 mt-32">
-        Loading analytics...
+      <div className="varoza-container py-16">
+        <div className="rounded-3xl border border-black/10 bg-white/80 p-10 text-center card-shadow">
+          <p className="text-sm font-extrabold uppercase tracking-[0.2em] text-[#58181F]">Loading analytics...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16">
-      <h1 className="text-3xl font-bold text-purple-400 mb-12">
-        Platform Analytics
-      </h1>
+    <div className="varoza-container py-8 md:py-12">
+      <div className="rounded-[2rem] border border-black/10 bg-white/80 p-6 card-shadow md:p-8">
+        <p className="text-xs font-extrabold uppercase tracking-[0.26em] text-[#58181F]">Admin Control Room</p>
+        <h1 className="mt-2 font-['Cinzel'] text-3xl font-semibold tracking-[0.08em] text-black md:text-4xl">
+          Platform Analytics
+        </h1>
+        <p className="mt-3 max-w-2xl text-base text-black/70">
+          Track marketplace performance and configure pricing controls from one place.
+        </p>
 
-      {/* ================= STATS ================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-        <StatCard label="Total Orders" value={analytics.totalOrders} />
-        <StatCard
-          label="Total Revenue"
-          value={`₹${analytics.totalRevenue}`}
-          color="text-green-400"
-        />
-        <StatCard
-          label="Admin Margin"
-          value={`₹${analytics.totalAdminMargin}`}
-          color="text-yellow-400"
-        />
-        <StatCard
-          label="Seller Earnings"
-          value={`₹${analytics.totalSellerEarning}`}
-          color="text-blue-400"
-        />
+        <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard label="Total Orders" value={analytics?.totalOrders ?? 0} accent="text-[#58181F]" />
+          <StatCard label="Total Revenue" value={`₹${analytics?.totalRevenue ?? 0}`} accent="text-black" />
+          <StatCard label="Admin Margin" value={`₹${analytics?.totalAdminMargin ?? 0}`} accent="text-[#58181F]" />
+          <StatCard label="Seller Earnings" value={`₹${analytics?.totalSellerEarning ?? 0}`} accent="text-black" />
+        </div>
       </div>
 
-      {/* ================= MARGIN CONTROL ================= */}
-      <div className="bg-black/60 p-6 rounded-xl max-w-md border border-white/10">
-        <h2 className="text-xl text-white mb-4">
-          Set Seller Margin (%)
-        </h2>
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <section className="rounded-3xl border border-black/10 bg-white/85 p-6 card-shadow">
+          <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#58181F]">Pricing Control</p>
+          <h2 className="mt-2 font-['Cinzel'] text-2xl font-semibold tracking-[0.05em] text-[#58181F]">
+            Set Seller Margin (%)
+          </h2>
 
-        <input
-          type="number"
-          placeholder="Enter margin percentage"
-          value={margin}
-          onChange={(e) => setMargin(e.target.value)}
-          className="w-full p-3 rounded bg-black/40 text-white mb-4"
-        />
+          <input
+            type="number"
+            placeholder="Enter margin percentage"
+            value={margin}
+            onChange={(e) => setMargin(e.target.value)}
+            className="mt-4 w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-base font-semibold text-black outline-none transition focus:border-[#58181F]"
+          />
 
-        <button
-          onClick={updateMargin}
-          disabled={updating}
-          className="w-full bg-purple-600 py-3 rounded hover:bg-purple-700 disabled:opacity-50"
-        >
-          {updating ? "Updating..." : "Update Margin"}
-        </button>
+          <button
+            type="button"
+            onClick={updateMargin}
+            disabled={updatingMargin}
+            className="mt-4 rounded-full bg-black px-5 py-2.5 text-sm font-extrabold uppercase tracking-[0.12em] text-white transition hover:bg-[#58181F] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {updatingMargin ? "Updating..." : "Update Margin"}
+          </button>
+        </section>
+
+        <section className="rounded-3xl border border-black/10 bg-white/85 p-6 card-shadow">
+          <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#58181F]">Delivery Control</p>
+          <h2 className="mt-2 font-['Cinzel'] text-2xl font-semibold tracking-[0.05em] text-[#58181F]">
+            Set Shipping Charge (₹)
+          </h2>
+
+          <input
+            type="number"
+            placeholder="Enter shipping amount"
+            value={shippingCharge}
+            onChange={(e) => setShippingCharge(e.target.value)}
+            className="mt-4 w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-base font-semibold text-black outline-none transition focus:border-[#58181F]"
+          />
+
+          <button
+            type="button"
+            onClick={updateShipping}
+            disabled={updatingShipping}
+            className="mt-4 rounded-full bg-black px-5 py-2.5 text-sm font-extrabold uppercase tracking-[0.12em] text-white transition hover:bg-[#58181F] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {updatingShipping ? "Updating..." : "Update Shipping"}
+          </button>
+        </section>
       </div>
 
-      {/* ================= SHIPPING CONTROL ================= */}
-<div className="bg-black/60 p-6 rounded-xl max-w-md border border-white/10 mt-10">
-  <h2 className="text-xl text-white mb-4">
-    Set Shipping Charge (₹)
-  </h2>
+      <section className="mt-8 rounded-3xl border border-black/10 bg-white/85 p-6 card-shadow">
+        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#58181F]">Offers & Promotions</p>
+        <h2 className="mt-2 font-['Cinzel'] text-2xl font-semibold tracking-[0.05em] text-[#58181F]">Coupon Controls</h2>
 
-  <input
-    type="number"
-    placeholder="Enter shipping amount"
-    value={shippingCharge}
-    onChange={(e) => setShippingCharge(e.target.value)}
-    className="w-full p-3 rounded bg-black/40 text-white mb-4"
-  />
-
-  <button
-    onClick={updateShipping}
-    disabled={updatingShipping}
-    className="w-full bg-purple-600 py-3 rounded hover:bg-purple-700 disabled:opacity-50"
-  >
-    {updatingShipping ? "Updating..." : "Update Shipping"}
-  </button>
-</div>
-
-
-      {/* ================= COUPONS SECTION (ADDED SPACING ONLY) ================= */}
-      <div className="mt-16">
-        <AdminCoupons />
-      </div>
+        <div className="mt-5">
+          <AdminCoupons />
+        </div>
+      </section>
     </div>
   );
 }
 
-function StatCard({ label, value, color = "text-purple-400" }) {
+function StatCard({ label, value, accent = "text-[#58181F]" }) {
   return (
-    <div className="bg-black/60 p-6 rounded-xl border border-white/10">
-      <p className="text-gray-400 text-sm">{label}</p>
-      <p className={`text-2xl font-bold ${color}`}>
-        {value}
-      </p>
+    <div className="rounded-2xl border border-black/10 bg-[#fff9ef] p-4">
+      <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-black/55">{label}</p>
+      <p className={`mt-2 text-2xl font-black ${accent}`}>{value}</p>
     </div>
   );
 }

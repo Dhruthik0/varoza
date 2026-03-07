@@ -20,7 +20,7 @@ export default function BuySection({ posterId }) {
     <div className="mt-8 bg-black/40 p-6 rounded-xl">
       <h3 className="text-lg text-purple-300 mb-4">Pay via UPI</h3>
 
-      <img src="/upi-qr.png" className="w-48 mx-auto" />
+      <img src="/upi-qr.png" alt="UPI QR" className="w-48 mx-auto" loading="lazy" decoding="async" />
       <p className="text-center mt-2 text-gray-400">
         UPI ID: varoza@upi
       </p>

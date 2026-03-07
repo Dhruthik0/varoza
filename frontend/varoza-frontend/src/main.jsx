@@ -12,16 +12,17 @@ import { CartProvider } from "./context/CartContext";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-    <Toaster
-  position="top-right"
-  toastOptions={{
-    style: {
-      background: "#111",
-      color: "#fff",
-      border: "1px solid rgba(255,255,255,0.1)",
-    },
-  }}
-/>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "#FFFFFF",
+            color: "#000000",
+            border: "1px solid rgba(0, 0, 0, 0.12)",
+            boxShadow: "0 14px 30px rgba(88, 24, 31, 0.16)",
+          },
+        }}
+      />
 
       <AuthProvider>
         <CartProvider>
@@ -31,4 +32,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </React.StrictMode>
 );
-

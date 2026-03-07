@@ -25,7 +25,6 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function SellerRoute({ children }) {
   const { user, authLoading } = useContext(AuthContext); // ✅ added authLoading
-  const loginAs = localStorage.getItem("loginAs");
 
   // ⏳ Wait until auth finishes restoring user
   if (authLoading) {
@@ -37,8 +36,8 @@ export default function SellerRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  // ❌ Logged in but not in seller mode
-  if (loginAs !== "seller") {
+  // ❌ Logged in but not a seller
+  if (user.role !== "seller") {
     return <Navigate to="/" replace />;
   }
 
