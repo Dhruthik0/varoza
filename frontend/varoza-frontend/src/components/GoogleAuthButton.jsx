@@ -40,12 +40,17 @@ const loadGoogleScript = () => {
   return googleScriptPromise;
 };
 
+const GOOGLE_CLIENT_ID_FALLBACK =
+  "8463172399-gagijvikmsqqoh8iqmq6q16pbaletbni.apps.googleusercontent.com";
+
 export default function GoogleAuthButton({ onCredential, onError, disabled = false }) {
   const buttonRef = useRef(null);
   const [renderError, setRenderError] = useState("");
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const clientId =
+      String(import.meta.env.VITE_GOOGLE_CLIENT_ID || "").trim() ||
+      GOOGLE_CLIENT_ID_FALLBACK;
 
     if (isLikelyInvalidClientId(clientId)) {
       setRenderError("Google login is not configured with a valid Web Client ID.");
