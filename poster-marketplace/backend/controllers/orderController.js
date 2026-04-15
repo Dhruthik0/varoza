@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const Poster = require("../models/Poster");
 const AdminSettings = require("../models/AdminSettings");
+const FREE_SHIPPING_THRESHOLD = 200;
 
 /* ======================================================
    🛒 BUYER CREATES SINGLE GROUPED ORDER
@@ -19,7 +20,7 @@ exports.createOrder = async (req, res) => {
 
     const settings = await AdminSettings.findOne();
     const marginPercentage = settings?.marginPercentage || 20;
-    const shippingCharge = settings?.shippingCharge || 0;
+    const configuredShippingCharge = Number(settings?.shippingCharge || 0);
 
     // 🎟 Coupon lookup
     let coupon = null;
@@ -103,15 +104,18 @@ exports.createOrder = async (req, res) => {
       });
     }
 
+    const effectiveShippingCharge =
+      cartSubTotal >= FREE_SHIPPING_THRESHOLD ? 0 : configuredShippingCharge;
+
     const finalTotal =
-      cartSubTotal - totalDiscountAmount + shippingCharge;
+      cartSubTotal - totalDiscountAmount + effectiveShippingCharge;
 
     // ✅ Create ONE order
     const order = await Order.create({
       buyer: req.user.id,
       items,
       totalAmount: finalTotal,
-      shippingCharge,
+      shippingCharge: effectiveShippingCharge,
       discountAmount: totalDiscountAmount,
       couponCode: appliedCouponCode,
       deliveryAddress: address,

@@ -14,9 +14,13 @@ export default function Cart() {
     subTotal,
     discountAmount,
     shippingCharge,
+    baseShippingCharge,
     setShippingCharge,
     setCoupon,
     finalTotal,
+    qualifiesForFreeShipping,
+    freeShippingThreshold,
+    amountForFreeShipping,
     addToCart,
     decreaseQuantity,
     removeFromCart
@@ -173,6 +177,20 @@ export default function Cart() {
             )}
           </div>
 
+          {baseShippingCharge > 0 && (
+            <div
+              className={`mt-4 rounded-xl border px-4 py-3 text-sm font-semibold ${
+                qualifiesForFreeShipping
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : "border-[#58181F]/20 bg-[#58181F]/5 text-[#58181F]"
+              }`}
+            >
+              {qualifiesForFreeShipping
+                ? `Free shipping unlocked on orders ₹${formatCurrency(freeShippingThreshold)} and above.`
+                : `Add ₹${formatCurrency(amountForFreeShipping)} more to get free shipping.`}
+            </div>
+          )}
+
           <div className="mt-6 space-y-2 text-base text-black/75">
             <div className="flex justify-between">
               <span>Subtotal</span>
@@ -180,7 +198,14 @@ export default function Cart() {
             </div>
             <div className="flex justify-between">
               <span>Shipping</span>
-              <span>Rs. {formatCurrency(shippingCharge)}</span>
+              {qualifiesForFreeShipping && baseShippingCharge > 0 ? (
+                <span className="font-semibold text-emerald-700">
+                  <span className="mr-2 text-black/45 line-through">Rs. {formatCurrency(baseShippingCharge)}</span>
+                  Rs. 0
+                </span>
+              ) : (
+                <span>Rs. {formatCurrency(shippingCharge)}</span>
+              )}
             </div>
             <div className="flex justify-between">
               <span>Discount</span>

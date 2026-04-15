@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 
+const PENDING_PAYMENT_STORAGE_KEY = "varoza_pending_payment";
+
 const formatCurrency = (value) =>
   new Intl.NumberFormat("en-IN", {
     maximumFractionDigits: 0
@@ -70,8 +72,21 @@ Phone: ${phone}
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
+      const createdOrder = data?.order;
+      if (!createdOrder?._id) {
+        throw new Error("Order created but missing payment details. Please try again.");
+      }
+
+      const pendingPayment = {
+        orderId: createdOrder._id,
+        totalAmount: Number(createdOrder.totalAmount || finalTotal || 0),
+        createdAt: createdOrder.createdAt || new Date().toISOString()
+      };
+
+      localStorage.setItem(PENDING_PAYMENT_STORAGE_KEY, JSON.stringify(pendingPayment));
+
       clearCart();
-      navigate("/payment");
+      navigate("/payment", { state: pendingPayment });
     } catch (err) {
       alert(err.message);
     } finally {

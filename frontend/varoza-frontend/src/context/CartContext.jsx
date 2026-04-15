@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext(null);
+const FREE_SHIPPING_THRESHOLD = 200;
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState(() => {
@@ -95,9 +96,13 @@ export function CartProvider({ children }) {
     );
   }
 
+  const qualifiesForFreeShipping = subTotal >= FREE_SHIPPING_THRESHOLD;
+  const effectiveShippingCharge = qualifiesForFreeShipping ? 0 : shippingCharge;
+  const amountForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subTotal);
+
   // 💵 FINAL TOTAL
   const finalTotal =
-    subTotal - discountAmount + shippingCharge;
+    subTotal - discountAmount + effectiveShippingCharge;
 
   return (
     <CartContext.Provider
@@ -112,8 +117,12 @@ export function CartProvider({ children }) {
         finalTotal,
         coupon,
         setCoupon,
-        shippingCharge,
-        setShippingCharge
+        shippingCharge: effectiveShippingCharge,
+        baseShippingCharge: shippingCharge,
+        setShippingCharge,
+        qualifiesForFreeShipping,
+        freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
+        amountForFreeShipping
       }}
     >
       {children}
